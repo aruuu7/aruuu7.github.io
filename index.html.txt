@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Aaron OS</title>
+
+<style>
+body{
+background:black;
+color:#00ff88;
+font-family:monospace;
+padding:30px;
+}
+
+textarea{
+width:420px;
+height:200px;
+background:black;
+color:#00ff88;
+border:1px solid #00ff88;
+}
+
+button{
+background:#00ff88;
+color:black;
+border:none;
+padding:8px 14px;
+cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>⚡ Aaron OS</h1>
+<p>Personal Dashboard</p>
+
+<h3>Notes</h3>
+
+<textarea id="notes"></textarea>
+<br><br>
+
+<button onclick="saveNote()">Save</button>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* YOUR FIREBASE CONFIG */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCmUw12qALP4k_ZU4xBVSw0OPn4pDzd-9Q",
+  authDomain: "aruuu-dashboard.firebaseapp.com",
+  projectId: "aruuu-dashboard",
+  storageBucket: "aruuu-dashboard.firebasestorage.app",
+  messagingSenderId: "109570038436",
+  appId: "1:109570038436:web:f3371737635a33ef4d2431",
+  measurementId: "G-M1W5NXVT2Z"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const docRef = doc(db, "dashboard", "notes");
+
+/* LOAD DATA */
+
+async function loadNote(){
+const snap = await getDoc(docRef);
+
+if(snap.exists()){
+document.getElementById("notes").value = snap.data().text;
+}
+}
+
+/* SAVE DATA */
+
+window.saveNote = async function(){
+
+let text = document.getElementById("notes").value;
+
+await setDoc(docRef,{text:text});
+
+alert("Saved to cloud!");
+}
+
+loadNote();
+
+</script>
+
+</body>
+</html>
