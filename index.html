@@ -1,428 +1,1277 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Aruuu Dimension</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aruuu Dimension // Idle Rift</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Cinzel&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 
-<style>
+  <style>
+    :root{
+      --bg:#000;
+      --green:#00ff88;
+      --green-soft:rgba(0,255,136,0.12);
+      --green-border:rgba(0,255,136,0.45);
+      --red:#ff3b3b;
+      --white:#e8fff4;
+      --shadow:0 0 18px rgba(0,255,136,0.18);
+    }
 
-body{
-background:black;
-color:#00ff88;
-font-family:'Share Tech Mono', monospace;
-overflow:hidden;
-margin:0;
-}
+    *{ box-sizing:border-box; }
 
-/* MATRIX BACKGROUND */
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--green);
+      font-family:'Share Tech Mono', monospace;
+      overflow:hidden;
+    }
 
-canvas{
-position:fixed;
-top:0;
-left:0;
-z-index:-1;
-}
+    canvas{
+      position:fixed;
+      inset:0;
+      z-index:-2;
+    }
 
-/* BOOT TERMINAL */
+    .scan{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:repeating-linear-gradient(
+        to bottom,
+        rgba(0,255,136,0.02) 0px,
+        rgba(0,255,136,0.02) 1px,
+        rgba(0,0,0,0) 2px,
+        rgba(0,0,0,0) 4px
+      );
+      z-index:-1;
+    }
 
-#boot{
-position:absolute;
-bottom:120px;
-right:180px;
-width:450px;
-font-size:18px;
-line-height:1.7;
-}
+    .screen{
+      display:none;
+      width:100vw;
+      height:100vh;
+      position:relative;
+    }
 
-/* LOADER */
+    .show{
+      display:block;
+    }
 
-#loader{
-position:absolute;
-bottom:80px;
-right:180px;
-display:none;
-}
+    /* BOOT */
+    #bootScreen{
+      padding:30px;
+    }
 
-.loadingDots::after{
-content:'';
-animation:dots 1.5s infinite;
-}
+    #boot{
+      position:absolute;
+      bottom:120px;
+      right:140px;
+      width:min(520px, 90vw);
+      font-size:18px;
+      line-height:1.7;
+      text-shadow:0 0 8px rgba(0,255,136,0.3);
+    }
 
-@keyframes dots{
-0%{content:'';}
-33%{content:'.';}
-66%{content:'..';}
-100%{content:'...';}
-}
+    #loader{
+      position:absolute;
+      bottom:80px;
+      right:140px;
+      display:none;
+      font-size:16px;
+      opacity:0.95;
+    }
 
-/* SECURITY SCREEN */
+    .loadingDots::after{
+      content:'';
+      animation:dots 1.5s infinite;
+    }
 
-#securityBox{
-display:none;
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-text-align:center;
-font-family:'Cinzel', serif;
-color:red;
-}
+    @keyframes dots{
+      0%{content:'';}
+      33%{content:'.';}
+      66%{content:'..';}
+      100%{content:'...';}
+    }
 
-/* RITUAL SYMBOL */
+    /* GATE */
+    #securityBox{
+      display:none;
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      text-align:center;
+      width:min(760px, 92vw);
+      padding:28px 24px;
+      border:1px solid var(--green-border);
+      background:rgba(0,0,0,0.72);
+      box-shadow:var(--shadow);
+      border-radius:18px;
+      backdrop-filter: blur(4px);
+    }
 
-.ritual{
-font-size:100px;
-color:white;
-margin-bottom:20px;
-animation:floatSpin 6s ease-in-out infinite;
-}
+    .ritual{
+      font-size:82px;
+      color:var(--green);
+      margin-bottom:14px;
+      animation:floatSpin 8s ease-in-out infinite;
+      text-shadow:0 0 18px rgba(0,255,136,0.35);
+    }
 
-/* FLOAT + SPIN */
+    @keyframes floatSpin{
+      0%{ transform:translateY(0px) rotate(0deg); }
+      50%{ transform:translateY(-12px) rotate(180deg); }
+      100%{ transform:translateY(0px) rotate(360deg); }
+    }
 
-@keyframes floatSpin{
+    .runic{
+      font-family:'Cinzel', serif;
+      color:var(--green);
+      font-size:clamp(18px, 2.2vw, 28px);
+      line-height:1.7;
+      letter-spacing:1px;
+      text-shadow:0 0 10px rgba(0,255,136,0.2);
+    }
 
-0%{
-transform:translateY(0px) rotate(0deg);
-}
+    .translation{
+      margin-top:14px;
+      font-size:14px;
+      color:#9dffcf;
+      opacity:0.9;
+    }
 
-50%{
-transform:translateY(-25px) rotate(180deg);
-}
+    .domainPrompt{
+      margin-top:18px;
+      font-size:18px;
+      color:#d6ffe9;
+      letter-spacing:1px;
+    }
 
-100%{
-transform:translateY(0px) rotate(360deg);
-}
+    .gateControls{
+      margin-top:22px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
 
-}
+    input, textarea, select, button{
+      font-family:'Share Tech Mono', monospace;
+    }
 
-/* DASHBOARD */
+    #answer{
+      width:min(320px, 70vw);
+      background:#030503;
+      color:var(--green);
+      border:1px solid var(--green-border);
+      border-radius:12px;
+      padding:12px 14px;
+      outline:none;
+      font-size:15px;
+    }
 
-#dashboard{
-display:none;
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-text-align:center;
-}
+    .btn{
+      background:linear-gradient(180deg, #00ff88 0%, #00c86a 100%);
+      color:#001c10;
+      border:none;
+      padding:12px 18px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      letter-spacing:0.5px;
+      box-shadow:0 0 16px rgba(0,255,136,0.18);
+      transition:transform .15s ease, box-shadow .2s ease;
+    }
 
-textarea{
-width:420px;
-height:200px;
-background:black;
-color:#00ff88;
-border:1px solid #00ff88;
-}
+    .btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 0 22px rgba(0,255,136,0.28);
+    }
 
-button{
-background:#00ff88;
-color:black;
-border:none;
-padding:8px 14px;
-cursor:pointer;
-}
+    .btn.secondary{
+      background:transparent;
+      color:var(--green);
+      border:1px solid var(--green-border);
+    }
 
-/* SECRET CONSOLE */
+    /* IDLE RIFT */
+    #riftScreen{
+      padding:24px;
+      display:none;
+    }
 
-#console{
-display:none;
-position:absolute;
-bottom:20px;
-left:20px;
-background:black;
-border:1px solid #00ff88;
-padding:10px;
-}
+    .riftWrap{
+      display:flex;
+      flex-direction:column;
+      height:100%;
+      gap:18px;
+    }
 
-#console input{
-background:black;
-border:none;
-color:#00ff88;
-outline:none;
-width:260px;
-}
+    .riftHeader{
+      text-align:center;
+      padding-top:6px;
+    }
 
-</style>
+    .riftTitle{
+      font-family:'Cinzel', serif;
+      font-size:clamp(26px, 3.6vw, 48px);
+      color:#d9ffee;
+      margin:0;
+      text-shadow:0 0 14px rgba(0,255,136,0.18);
+    }
+
+    .riftSub{
+      margin-top:6px;
+      color:#93ffcb;
+      font-size:14px;
+      letter-spacing:1px;
+    }
+
+    .gameGrid{
+      flex:1;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      min-height:0;
+    }
+
+    .panel{
+      border:1px solid var(--green-border);
+      background:rgba(0,0,0,0.68);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:16px;
+      position:relative;
+      overflow:hidden;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .panelTitle{
+      font-family:'Cinzel', serif;
+      font-size:24px;
+      color:#d9ffee;
+      margin-bottom:6px;
+    }
+
+    .panelSub{
+      color:#8fffc8;
+      font-size:13px;
+      margin-bottom:12px;
+    }
+
+    .topRight{
+      position:absolute;
+      top:14px;
+      right:14px;
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-bottom:12px;
+    }
+
+    .controls select,
+    .controls input{
+      background:#030503;
+      color:var(--green);
+      border:1px solid var(--green-border);
+      border-radius:10px;
+      padding:10px 12px;
+      outline:none;
+    }
+
+    .gameArea{
+      flex:1;
+      border:1px dashed rgba(0,255,136,0.25);
+      border-radius:16px;
+      padding:14px;
+      overflow:auto;
+      background:rgba(0,255,136,0.02);
+    }
+
+    .status{
+      margin-top:10px;
+      min-height:20px;
+      font-size:13px;
+      color:#baffdf;
+    }
+
+    /* Memory */
+    #memoryDisplay{
+      font-size:clamp(28px, 4vw, 52px);
+      text-align:center;
+      letter-spacing:8px;
+      color:#dffff0;
+      margin-top:24px;
+      word-break:break-all;
+      text-shadow:0 0 12px rgba(0,255,136,0.18);
+    }
+
+    .memoryInputRow{
+      margin-top:18px;
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+
+    #memoryAnswer{
+      width:min(360px, 90%);
+      background:#030503;
+      color:var(--green);
+      border:1px solid var(--green-border);
+      border-radius:12px;
+      padding:12px 14px;
+      font-size:16px;
+      display:none;
+    }
+
+    /* Shapes */
+    #shapeDisplay{
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:12px;
+      align-content:start;
+    }
+
+    .shape{
+      aspect-ratio:1/1;
+      border:1px solid rgba(0,255,136,0.35);
+      border-radius:14px;
+      background:rgba(0,255,136,0.05);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      box-shadow:inset 0 0 18px rgba(0,255,136,0.03);
+      cursor:pointer;
+    }
+
+    .shape::before{
+      content:'';
+      width:58%;
+      height:58%;
+      display:block;
+      background:#00ff88;
+      box-shadow:0 0 14px rgba(0,255,136,0.22);
+    }
+
+    .circle::before{ border-radius:50%; }
+    .square::before{ border-radius:8px; }
+    .diamond::before{ transform:rotate(45deg); border-radius:6px; }
+    .triangle::before{
+      width:0; height:0; background:none;
+      border-left:28px solid transparent;
+      border-right:28px solid transparent;
+      border-bottom:48px solid #00ff88;
+      box-shadow:none;
+    }
+
+    .hiddenShape{
+      opacity:0.18;
+      border-style:dashed;
+    }
+
+    .selectedMissing{
+      outline:2px solid #dffff0;
+      box-shadow:0 0 0 2px rgba(0,255,136,0.2), 0 0 18px rgba(0,255,136,0.18);
+    }
+
+    /* Bottom bar */
+    .bottomBar{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+
+    .privateFindsBtn{
+      width:min(960px, 100%);
+      border:1px solid var(--green-border);
+      background:rgba(0,0,0,0.72);
+      color:#dffff0;
+      border-radius:16px;
+      padding:14px 18px;
+      cursor:pointer;
+      text-align:center;
+      font-family:'Cinzel', serif;
+      font-size:20px;
+      box-shadow:var(--shadow);
+    }
+
+    /* PRIVATE FINDS */
+    #privateScreen{
+      padding:18px;
+      display:none;
+    }
+
+    .privateWrap{
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .privateHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .privateTitle{
+      font-family:'Cinzel', serif;
+      font-size:clamp(22px, 3vw, 38px);
+      color:#e4fff3;
+    }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .tabBtn{
+      background:transparent;
+      color:var(--green);
+      border:1px solid var(--green-border);
+      padding:10px 14px;
+      border-radius:12px;
+      cursor:pointer;
+    }
+
+    .tabBtn.active{
+      background:rgba(0,255,136,0.12);
+      color:#e4fff3;
+    }
+
+    .privateBody{
+      flex:1;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      min-height:0;
+    }
+
+    .card{
+      border:1px solid var(--green-border);
+      border-radius:18px;
+      background:rgba(0,0,0,0.68);
+      box-shadow:var(--shadow);
+      padding:14px;
+      overflow:auto;
+      display:none;
+    }
+
+    .card.showCard{
+      display:block;
+    }
+
+    .card h3{
+      margin-top:0;
+      color:#e4fff3;
+      font-family:'Cinzel', serif;
+    }
+
+    textarea{
+      width:100%;
+      min-height:220px;
+      background:#030503;
+      color:var(--green);
+      border:1px solid var(--green-border);
+      border-radius:12px;
+      padding:12px;
+      resize:vertical;
+      outline:none;
+    }
+
+    .miniInput{
+      width:100%;
+      background:#030503;
+      color:var(--green);
+      border:1px solid var(--green-border);
+      border-radius:12px;
+      padding:12px;
+      outline:none;
+      margin-bottom:10px;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .listItem{
+      border:1px solid rgba(0,255,136,0.25);
+      border-radius:12px;
+      padding:10px;
+      background:rgba(0,255,136,0.03);
+      word-break:break-word;
+    }
+
+    .listItem a{
+      color:#9dffcf;
+    }
+
+    .twoCol{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .customBox{
+      min-height:140px;
+      border:1px dashed rgba(0,255,136,0.25);
+      border-radius:14px;
+      padding:12px;
+      background:rgba(0,255,136,0.02);
+    }
+
+    .hint{
+      font-size:12px;
+      color:#9dffcf;
+      opacity:0.9;
+      margin-top:8px;
+    }
+
+    @media (max-width: 980px){
+      body{ overflow:auto; }
+      #riftScreen, #privateScreen{ height:auto; min-height:100vh; }
+      .gameGrid, .privateBody, .twoCol{
+        grid-template-columns:1fr;
+      }
+      #boot{
+        right:20px;
+        bottom:110px;
+      }
+      #loader{
+        right:20px;
+      }
+      #shapeDisplay{
+        grid-template-columns:repeat(3, 1fr);
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-<canvas id="matrix"></canvas>
-
-<div id="boot"></div>
-
-<div id="loader">
-loading<span class="loadingDots"></span>
-</div>
-
-<!-- SECURITY SCREEN -->
-
-<div id="securityBox">
-
-<div class="ritual">⚚</div>
-
-<div>
-
-⟁ ᚨᛒᛁᛋᛋ ᛏᛟ ᛏᚺᛖ ᚢᚾᚴᚾᛟᚹᚾ ⟁ <br>
-ᚨᚱᚢᚢᚢ ᛞᛁᛗᛖᚾᛋᛁᛟᚾ <br>
-ᚨᚲᚲᛖᛋᛋᛟᚱ ᚹᚺᛟᛗ?
-
-</div>
-
-<br>
-
-<input id="answer">
-<button onclick="check()">enter</button>
-
-</div>
-
-<!-- DASHBOARD -->
-
-<div id="dashboard">
-
-<h1>⚡ Aaron OS</h1>
-
-<p>Personal Matrix</p>
-
-<textarea id="notes"></textarea>
-
-<br><br>
-
-<button onclick="saveNote()">Save</button>
-
-</div>
-
-<!-- SECRET CONSOLE -->
-
-<div id="console">
-> <input id="cmd">
-</div>
-
-<!-- SOUND -->
-
-<audio id="bootSound" loop>
-<source src="https://cdn.pixabay.com/download/audio/2023/03/14/audio_f4b4db3c0a.mp3?filename=dark-ambient-141528.mp3">
-</audio>
-
-<!-- FIREBASE -->
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-apiKey:"AIzaSyCmUw12qALP4k_ZU4xBVSw0OPn4pDzd-9Q",
-authDomain:"aruuu-dashboard.firebaseapp.com",
-projectId:"aruuu-dashboard",
-storageBucket:"aruuu-dashboard.firebasestorage.app",
-messagingSenderId:"109570038436",
-appId:"1:109570038436:web:f3371737635a33ef4d2431"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const docRef = doc(db,"dashboard","notes");
-
-async function loadNote(){
-
-const snap = await getDoc(docRef);
-
-if(snap.exists()){
-document.getElementById("notes").value = snap.data().text;
-}
-
-}
-
-window.saveNote = async function(){
-
-let text=document.getElementById("notes").value;
-
-await setDoc(docRef,{text:text});
-
-alert("Saved to cloud!");
-
-}
-
-loadNote();
-
-</script>
-
-<script>
-
-/* MATRIX RAIN */
-
-const canvas=document.getElementById("matrix");
-const ctx=canvas.getContext("2d");
-
-canvas.height=window.innerHeight;
-canvas.width=window.innerWidth;
-
-const letters="01ΔRUUU";
-const fontSize=16;
-const columns=canvas.width/fontSize;
-
-const drops=[];
-
-for(let x=0;x<columns;x++)
-drops[x]=1;
-
-function draw(){
-
-ctx.fillStyle="rgba(0,0,0,0.05)";
-ctx.fillRect(0,0,canvas.width,canvas.height);
-
-ctx.fillStyle="#00ff88";
-ctx.font=fontSize+"px monospace";
-
-for(let i=0;i<drops.length;i++){
-
-const text=letters.charAt(Math.floor(Math.random()*letters.length));
-
-ctx.fillText(text,i*fontSize,drops[i]*fontSize);
-
-if(drops[i]*fontSize>canvas.height && Math.random()>0.975)
-drops[i]=0;
-
-drops[i]++;
-
-}
-
-}
-
-setInterval(draw,33);
-
-/* BOOT TEXT */
-
-const lines=[
-"> initializing ΔRUUU DIMENSION...",
-"> opening abyss channel...",
-"> unknown presence detected...",
-"> decrypting ancient language...",
-"> ritual authentication required..."
-];
-
-let lineIndex=0;
-let charIndex=0;
-
-function typeLine(){
-
-if(lineIndex>=lines.length){
-
-document.getElementById("loader").style.display="block";
-
-setTimeout(()=>{
-document.getElementById("boot").style.display="none";
-document.getElementById("loader").style.display="none";
-document.getElementById("securityBox").style.display="block";
-},2000);
-
-return;
-
-}
-
-let boot=document.getElementById("boot");
-
-if(charIndex===0){
-
-let div=document.createElement("div");
-boot.appendChild(div);
-
-}
-
-let currentLine=lines[lineIndex];
-let currentDiv=boot.lastChild;
-
-currentDiv.textContent+=currentLine[charIndex];
-
-charIndex++;
-
-if(charIndex<currentLine.length){
-
-setTimeout(typeLine,30);
-
-}else{
-
-charIndex=0;
-lineIndex++;
-setTimeout(typeLine,500);
-
-}
-
-}
-
-/* PASSWORD */
-
-function check(){
-
-let ans=document.getElementById("answer").value;
-
-if(ans==="诺拉"){
-
-document.getElementById("securityBox").style.display="none";
-document.getElementById("dashboard").style.display="block";
-
-}else{
-
-alert("access denied");
-
-}
-
-}
-
-/* SECRET CONSOLE */
-
-document.addEventListener("keydown",function(e){
-
-if(e.key==="`"){
-
-let c=document.getElementById("console");
-
-c.style.display = c.style.display==="none" ? "block":"none";
-
-}
-
-});
-
-document.getElementById("cmd").addEventListener("keydown",function(e){
-
-if(e.key==="Enter"){
-
-let v=this.value;
-
-if(v==="admin aruuu"){
-
-alert("ADMIN ACCESS GRANTED");
-
-document.getElementById("dashboard").style.display="block";
-
-}
-
-this.value="";
-
-}
-
-});
-
-/* START */
-
-window.onload=function(){
-
-typeLine();
-
-}
-
-/* SOUND PLAY ON FIRST CLICK */
-
-document.addEventListener("click",function(){
-
-document.getElementById("bootSound").play();
-
-},{once:true});
-
-</script>
-
+  <canvas id="matrix"></canvas>
+  <div class="scan"></div>
+
+  <!-- BOOT SCREEN -->
+  <section id="bootScreen" class="screen show">
+    <div id="boot"></div>
+    <div id="loader">loading<span class="loadingDots"></span></div>
+
+    <div id="securityBox">
+      <div class="ritual">⚚</div>
+
+      <div class="runic">
+        ᚨᚱᚢᚢᚢ ᛞᛁᛗᛖᚾᛋᛁᛟᚾ<br>
+        ᛁᛞᛚᛖ ᚱᛁᚠᛏ<br>
+        ᛈᚱᛟᚲᛖᛖᛞ ᛏᛟ ᚨᚱᚢᚢᚢ ᛞᛟᛗᚨᛁᚾ
+      </div>
+
+      <div class="translation">
+        Proceed to Aruuu Domain
+      </div>
+
+      <div class="domainPrompt">
+        Enter domain key to proceed
+      </div>
+
+      <div class="gateControls">
+        <input id="answer" type="password" placeholder="Enter domain key..." />
+        <button class="btn" id="enterBtn">ENTER DOMAIN</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- IDLE RIFT -->
+  <section id="riftScreen" class="screen">
+    <div class="riftWrap">
+      <div class="riftHeader">
+        <h1 class="riftTitle">Aruuu Dimension // Idle Rift</h1>
+        <div class="riftSub">Cognitive drift protocols active</div>
+      </div>
+
+      <div class="gameGrid">
+        <!-- MEMORY BOOSTER -->
+        <div class="panel">
+          <button class="btn secondary topRight" id="memoryStopBtn">STOP</button>
+          <div class="panelTitle">Memory Booster</div>
+          <div class="panelSub">Observe. Retain. Recall.</div>
+
+          <div class="controls">
+            <select id="memoryLevel">
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+            <button class="btn" id="memoryStartBtn">START</button>
+          </div>
+
+          <div class="gameArea">
+            <div id="memoryDisplay">Press START</div>
+
+            <div class="memoryInputRow">
+              <input id="memoryAnswer" type="text" placeholder="Type the exact number..." />
+              <button class="btn secondary" id="memorySubmitBtn" style="display:none;">SUBMIT</button>
+            </div>
+          </div>
+
+          <div class="status" id="memoryStatus"></div>
+        </div>
+
+        <!-- FIND THE MISSING -->
+        <div class="panel">
+          <button class="btn secondary topRight" id="shapeStopBtn">STOP</button>
+          <div class="panelTitle">Find the Missing</div>
+          <div class="panelSub">Observe the pattern. Detect the absence.</div>
+
+          <div class="controls">
+            <select id="shapeLevel">
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+            <button class="btn" id="shapeStartBtn">START</button>
+            <button class="btn secondary" id="shapeSubmitBtn" style="display:none;">SUBMIT</button>
+          </div>
+
+          <div class="gameArea">
+            <div id="shapeDisplay"></div>
+          </div>
+
+          <div class="status" id="shapeStatus"></div>
+        </div>
+      </div>
+
+      <div class="bottomBar">
+        <button class="privateFindsBtn" id="privateFindsBtn">PRIVATE FINDS</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVATE FINDS -->
+  <section id="privateScreen" class="screen">
+    <div class="privateWrap">
+      <div class="privateHeader">
+        <div class="privateTitle">Private Finds</div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <div class="tabs">
+            <button class="tabBtn active" data-tab="notesCard">Notes</button>
+            <button class="tabBtn" data-tab="linksCard">Links</button>
+            <button class="tabBtn" data-tab="customCard">Customizable</button>
+            <button class="tabBtn" data-tab="imagesCard">Images</button>
+            <button class="tabBtn" data-tab="filesCard">Files</button>
+          </div>
+          <button class="btn secondary" id="backToRiftBtn">BACK</button>
+        </div>
+      </div>
+
+      <div class="privateBody">
+        <!-- NOTES -->
+        <div class="card showCard" id="notesCard">
+          <h3>Notes</h3>
+          <textarea id="notesArea" placeholder="Write your notes..."></textarea>
+          <div style="margin-top:10px;">
+            <button class="btn" id="saveNotesBtn">SAVE NOTES (LOCAL)</button>
+          </div>
+          <div class="hint">Currently saves in your browser only. Firebase version comes next.</div>
+        </div>
+
+        <!-- LINKS -->
+        <div class="card" id="linksCard">
+          <h3>Links</h3>
+          <input class="miniInput" id="linkName" placeholder="Link title..." />
+          <input class="miniInput" id="linkUrl" placeholder="https://example.com" />
+          <button class="btn" id="addLinkBtn">ADD LINK</button>
+          <div class="list" id="linksList"></div>
+        </div>
+
+        <!-- CUSTOM -->
+        <div class="card" id="customCard">
+          <h3>Customizable</h3>
+          <div class="twoCol">
+            <div class="customBox" contenteditable="true">Custom Box 1</div>
+            <div class="customBox" contenteditable="true">Custom Box 2</div>
+            <div class="customBox" contenteditable="true">Custom Box 3</div>
+            <div class="customBox" contenteditable="true">Custom Box 4</div>
+          </div>
+          <div class="hint">Editable placeholders for now. Later we connect them to cloud save.</div>
+        </div>
+
+        <!-- IMAGES -->
+        <div class="card" id="imagesCard">
+          <h3>Images (URL Preview)</h3>
+          <input class="miniInput" id="imageUrl" placeholder="Paste image URL..." />
+          <button class="btn" id="addImageBtn">ADD IMAGE</button>
+          <div class="list" id="imagesList"></div>
+          <div class="hint">Free version now uses image URLs only. Real uploads need Storage later.</div>
+        </div>
+
+        <!-- FILES -->
+        <div class="card" id="filesCard">
+          <h3>Files (URL Records)</h3>
+          <input class="miniInput" id="fileName" placeholder="File name..." />
+          <input class="miniInput" id="fileUrl" placeholder="Paste file URL..." />
+          <button class="btn" id="addFileBtn">ADD FILE LINK</button>
+          <div class="list" id="filesList"></div>
+          <div class="hint">For true uploads, we’ll add Firebase Storage later (or another free option).</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Optional sound -->
+  <audio id="bootSound" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2023/03/14/audio_f4b4db3c0a.mp3?filename=dark-ambient-141528.mp3" />
+  </audio>
+
+  <script>
+    /* =========================
+       MATRIX BACKGROUND
+    ========================= */
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas(){
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      setupMatrix();
+    }
+
+    let letters = "01ΔRUUUᚨᚱᚢ";
+    let fontSize = 16;
+    let columns = 0;
+    let drops = [];
+
+    function setupMatrix(){
+      columns = Math.floor(canvas.width / fontSize);
+      drops = [];
+      for(let x = 0; x < columns; x++) drops[x] = 1;
+    }
+
+    function drawMatrix(){
+      ctx.fillStyle = "rgba(0,0,0,0.06)";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      ctx.fillStyle = "#00ff88";
+      ctx.font = fontSize + "px monospace";
+
+      for(let i = 0; i < drops.length; i++){
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if(drops[i] * fontSize > canvas.height && Math.random() > 0.975){
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+    setInterval(drawMatrix, 33);
+
+    /* =========================
+       SCREEN CONTROL
+    ========================= */
+    const bootScreen = document.getElementById("bootScreen");
+    const riftScreen = document.getElementById("riftScreen");
+    const privateScreen = document.getElementById("privateScreen");
+
+    function showScreen(target){
+      [bootScreen, riftScreen, privateScreen].forEach(s => s.classList.remove("show"));
+      [bootScreen, riftScreen, privateScreen].forEach(s => s.style.display = "none");
+      target.classList.add("show");
+      target.style.display = "block";
+    }
+
+    /* =========================
+       BOOT TEXT
+    ========================= */
+    const lines = [
+      "> initializing ARUUU DIMENSION...",
+      "> opening idle rift protocols...",
+      "> scanning abyss channel...",
+      "> decrypting runic layer...",
+      "> domain access required..."
+    ];
+
+    let lineIndex = 0;
+    let charIndex = 0;
+
+    function typeLine(){
+      if(lineIndex >= lines.length){
+        document.getElementById("loader").style.display = "block";
+
+        setTimeout(() => {
+          document.getElementById("boot").style.display = "none";
+          document.getElementById("loader").style.display = "none";
+          document.getElementById("securityBox").style.display = "block";
+        }, 1800);
+
+        return;
+      }
+
+      const boot = document.getElementById("boot");
+
+      if(charIndex === 0){
+        let div = document.createElement("div");
+        boot.appendChild(div);
+      }
+
+      let currentLine = lines[lineIndex];
+      let currentDiv = boot.lastChild;
+
+      currentDiv.textContent += currentLine[charIndex];
+      charIndex++;
+
+      if(charIndex < currentLine.length){
+        setTimeout(typeLine, 28);
+      } else {
+        charIndex = 0;
+        lineIndex++;
+        setTimeout(typeLine, 420);
+      }
+    }
+
+    /* =========================
+       GATE / PASSWORD
+    ========================= */
+    const DOMAIN_KEY = "诺拉"; // change if you want
+
+    function checkGate(){
+      const ans = document.getElementById("answer").value.trim();
+      if(ans === DOMAIN_KEY){
+        document.getElementById("securityBox").style.display = "none";
+        showScreen(riftScreen);
+      } else {
+        alert("ACCESS DENIED");
+      }
+    }
+
+    document.getElementById("enterBtn").addEventListener("click", checkGate);
+    document.getElementById("answer").addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        checkGate();
+      }
+    });
+
+    /* =========================
+       SOUND ON FIRST CLICK
+    ========================= */
+    document.addEventListener("click", function(){
+      const audio = document.getElementById("bootSound");
+      audio.play().catch(() => {});
+    }, { once:true });
+
+    /* =========================
+       MEMORY BOOSTER
+    ========================= */
+    const memoryDisplay = document.getElementById("memoryDisplay");
+    const memoryLevel = document.getElementById("memoryLevel");
+    const memoryStartBtn = document.getElementById("memoryStartBtn");
+    const memoryStopBtn = document.getElementById("memoryStopBtn");
+    const memoryAnswer = document.getElementById("memoryAnswer");
+    const memorySubmitBtn = document.getElementById("memorySubmitBtn");
+    const memoryStatus = document.getElementById("memoryStatus");
+
+    let memoryNumber = "";
+    let memoryTimer = null;
+    let memoryRunning = false;
+
+    function randomDigits(length){
+      let out = "";
+      for(let i=0; i<length; i++){
+        out += Math.floor(Math.random() * 10);
+      }
+      return out;
+    }
+
+    function getMemoryLength(level){
+      if(level === "easy") return 6;
+      if(level === "medium") return 10;
+      return 14;
+    }
+
+    function startMemoryGame(){
+      stopMemoryGame(true);
+      memoryRunning = true;
+
+      const len = getMemoryLength(memoryLevel.value);
+      memoryNumber = randomDigits(len);
+
+      memoryDisplay.textContent = memoryNumber;
+      memoryStatus.textContent = "Memorize the number... 30 seconds";
+      memoryAnswer.style.display = "none";
+      memorySubmitBtn.style.display = "none";
+      memoryAnswer.value = "";
+
+      memoryTimer = setTimeout(() => {
+        memoryDisplay.textContent = "RECALL MODE";
+        memoryStatus.textContent = "Enter the exact number now.";
+        memoryAnswer.style.display = "inline-block";
+        memorySubmitBtn.style.display = "inline-block";
+        memoryAnswer.focus();
+      }, 30000);
+    }
+
+    function stopMemoryGame(silent=false){
+      memoryRunning = false;
+      if(memoryTimer){
+        clearTimeout(memoryTimer);
+        memoryTimer = null;
+      }
+      memoryDisplay.textContent = "Press START";
+      memoryAnswer.style.display = "none";
+      memorySubmitBtn.style.display = "none";
+      memoryAnswer.value = "";
+      if(!silent) memoryStatus.textContent = "Memory Booster stopped.";
+    }
+
+    function submitMemory(){
+      if(!memoryNumber) return;
+      const val = memoryAnswer.value.trim();
+      if(val === memoryNumber){
+        memoryStatus.textContent = "Correct. Memory lock stable.";
+      } else {
+        memoryStatus.textContent = `Wrong. Correct was: ${memoryNumber}`;
+      }
+      memoryRunning = false;
+      memoryNumber = "";
+      if(memoryTimer){
+        clearTimeout(memoryTimer);
+        memoryTimer = null;
+      }
+      memoryDisplay.textContent = "Press START";
+      memoryAnswer.style.display = "none";
+      memorySubmitBtn.style.display = "none";
+      memoryAnswer.value = "";
+    }
+
+    memoryStartBtn.addEventListener("click", startMemoryGame);
+    memoryStopBtn.addEventListener("click", () => stopMemoryGame());
+    memorySubmitBtn.addEventListener("click", submitMemory);
+    memoryAnswer.addEventListener("keydown", (e) => {
+      if(e.key === "Enter") submitMemory();
+    });
+
+    /* =========================
+       FIND THE MISSING
+    ========================= */
+    const shapeDisplay = document.getElementById("shapeDisplay");
+    const shapeLevel = document.getElementById("shapeLevel");
+    const shapeStartBtn = document.getElementById("shapeStartBtn");
+    const shapeStopBtn = document.getElementById("shapeStopBtn");
+    const shapeSubmitBtn = document.getElementById("shapeSubmitBtn");
+    const shapeStatus = document.getElementById("shapeStatus");
+
+    const SHAPES = ["circle", "square", "diamond", "triangle"];
+    let originalShapes = [];
+    let missingIndices = [];
+    let selectedMissing = new Set();
+    let shapeTimer = null;
+
+    function getShapeCount(level){
+      if(level === "easy") return 6;
+      if(level === "medium") return 8;
+      return 12;
+    }
+
+    function getMissingCount(level){
+      if(level === "easy") return 1;
+      if(level === "medium") return 2;
+      return 3;
+    }
+
+    function randomShape(){
+      return SHAPES[Math.floor(Math.random() * SHAPES.length)];
+    }
+
+    function renderShapes(shapeArr, hiddenSet = new Set(), clickable = false){
+      shapeDisplay.innerHTML = "";
+      selectedMissing.clear();
+
+      shapeArr.forEach((shapeType, index) => {
+        const div = document.createElement("div");
+        div.className = `shape ${shapeType}`;
+
+        if(hiddenSet.has(index)){
+          div.classList.add("hiddenShape");
+        }
+
+        if(clickable){
+          div.addEventListener("click", () => {
+            if(hiddenSet.has(index)) return; // can't select already missing visual slot
+            if(selectedMissing.has(index)){
+              selectedMissing.delete(index);
+              div.classList.remove("selectedMissing");
+            } else {
+              selectedMissing.add(index);
+              div.classList.add("selectedMissing");
+            }
+          });
+        }
+
+        shapeDisplay.appendChild(div);
+      });
+    }
+
+    function pickUniqueIndices(total, count){
+      const set = new Set();
+      while(set.size < count){
+        set.add(Math.floor(Math.random() * total));
+      }
+      return Array.from(set);
+    }
+
+    function startShapeGame(){
+      stopShapeGame(true);
+
+      const count = getShapeCount(shapeLevel.value);
+      const missCount = getMissingCount(shapeLevel.value);
+
+      originalShapes = [];
+      for(let i=0; i<count; i++){
+        originalShapes.push(randomShape());
+      }
+
+      missingIndices = pickUniqueIndices(count, missCount);
+
+      renderShapes(originalShapes);
+      shapeStatus.textContent = "Observe the shapes... 30 seconds";
+      shapeSubmitBtn.style.display = "none";
+
+      shapeTimer = setTimeout(() => {
+        renderShapes(originalShapes, new Set(missingIndices), true);
+        shapeStatus.textContent = `Select the original positions of the missing shape(s). Missing: ${missCount}`;
+        shapeSubmitBtn.style.display = "inline-block";
+      }, 30000);
+    }
+
+    function stopShapeGame(silent=false){
+      if(shapeTimer){
+        clearTimeout(shapeTimer);
+        shapeTimer = null;
+      }
+      originalShapes = [];
+      missingIndices = [];
+      selectedMissing.clear();
+      shapeDisplay.innerHTML = "";
+      shapeSubmitBtn.style.display = "none";
+      if(!silent) shapeStatus.textContent = "Find the Missing stopped.";
+    }
+
+    function submitShape(){
+      const a = [...selectedMissing].sort((x,y)=>x-y);
+      const b = [...missingIndices].sort((x,y)=>x-y);
+
+      const correct = a.length === b.length && a.every((v,i)=>v===b[i]);
+
+      if(correct){
+        shapeStatus.textContent = "Correct. Pattern integrity confirmed.";
+      } else {
+        shapeStatus.textContent = `Wrong. Missing positions were: ${b.map(x=>x+1).join(", ")}`;
+      }
+
+      shapeSubmitBtn.style.display = "none";
+    }
+
+    shapeStartBtn.addEventListener("click", startShapeGame);
+    shapeStopBtn.addEventListener("click", () => stopShapeGame());
+    shapeSubmitBtn.addEventListener("click", submitShape);
+
+    /* =========================
+       PRIVATE FINDS NAV
+    ========================= */
+    document.getElementById("privateFindsBtn").addEventListener("click", () => {
+      showScreen(privateScreen);
+    });
+
+    document.getElementById("backToRiftBtn").addEventListener("click", () => {
+      showScreen(riftScreen);
+    });
+
+    /* =========================
+       TABS
+    ========================= */
+    const tabButtons = document.querySelectorAll(".tabBtn");
+    const cards = document.querySelectorAll(".card");
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabButtons.forEach(b => b.classList.remove("active"));
+        cards.forEach(c => c.classList.remove("showCard"));
+
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("showCard");
+      });
+    });
+
+    /* =========================
+       LOCAL STORAGE (TEMP)
+    ========================= */
+    const notesArea = document.getElementById("notesArea");
+    const saveNotesBtn = document.getElementById("saveNotesBtn");
+
+    notesArea.value = localStorage.getItem("aruuu_notes") || "";
+
+    saveNotesBtn.addEventListener("click", () => {
+      localStorage.setItem("aruuu_notes", notesArea.value);
+      alert("Notes saved locally.");
+    });
+
+    // LINKS
+    const linkName = document.getElementById("linkName");
+    const linkUrl = document.getElementById("linkUrl");
+    const addLinkBtn = document.getElementById("addLinkBtn");
+    const linksList = document.getElementById("linksList");
+
+    let linksData = JSON.parse(localStorage.getItem("aruuu_links") || "[]");
+
+    function renderLinks(){
+      linksList.innerHTML = "";
+      linksData.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "listItem";
+        div.innerHTML = `
+          <strong>${escapeHtml(item.name)}</strong><br>
+          <a href="${escapeAttr(item.url)}" target="_blank">${escapeHtml(item.url)}</a><br><br>
+          <button class="btn secondary" onclick="removeLink(${index})">DELETE</button>
+        `;
+        linksList.appendChild(div);
+      });
+    }
+
+    window.removeLink = function(index){
+      linksData.splice(index, 1);
+      localStorage.setItem("aruuu_links", JSON.stringify(linksData));
+      renderLinks();
+    }
+
+    addLinkBtn.addEventListener("click", () => {
+      const name = linkName.value.trim();
+      const url = linkUrl.value.trim();
+      if(!name || !url) return alert("Fill both fields.");
+      linksData.push({ name, url });
+      localStorage.setItem("aruuu_links", JSON.stringify(linksData));
+      linkName.value = "";
+      linkUrl.value = "";
+      renderLinks();
+    });
+
+    renderLinks();
+
+    // IMAGES
+    const imageUrl = document.getElementById("imageUrl");
+    const addImageBtn = document.getElementById("addImageBtn");
+    const imagesList = document.getElementById("imagesList");
+
+    let imagesData = JSON.parse(localStorage.getItem("aruuu_images") || "[]");
+
+    function renderImages(){
+      imagesList.innerHTML = "";
+      imagesData.forEach((url, index) => {
+        const div = document.createElement("div");
+        div.className = "listItem";
+        div.innerHTML = `
+          <img src="${escapeAttr(url)}" alt="preview" style="max-width:100%; border-radius:12px; border:1px solid rgba(0,255,136,0.2); margin-bottom:10px;">
+          <div><a href="${escapeAttr(url)}" target="_blank">${escapeHtml(url)}</a></div>
+          <br>
+          <button class="btn secondary" onclick="removeImage(${index})">DELETE</button>
+        `;
+        imagesList.appendChild(div);
+      });
+    }
+
+    window.removeImage = function(index){
+      imagesData.splice(index, 1);
+      localStorage.setItem("aruuu_images", JSON.stringify(imagesData));
+      renderImages();
+    }
+
+    addImageBtn.addEventListener("click", () => {
+      const url = imageUrl.value.trim();
+      if(!url) return alert("Paste image URL.");
+      imagesData.push(url);
+      localStorage.setItem("aruuu_images", JSON.stringify(imagesData));
+      imageUrl.value = "";
+      renderImages();
+    });
+
+    renderImages();
+
+    // FILES
+    const fileName = document.getElementById("fileName");
+    const fileUrl = document.getElementById("fileUrl");
+    const addFileBtn = document.getElementById("addFileBtn");
+    const filesList = document.getElementById("filesList");
+
+    let filesData = JSON.parse(localStorage.getItem("aruuu_files") || "[]");
+
+    function renderFiles(){
+      filesList.innerHTML = "";
+      filesData.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "listItem";
+        div.innerHTML = `
+          <strong>${escapeHtml(item.name)}</strong><br>
+          <a href="${escapeAttr(item.url)}" target="_blank">${escapeHtml(item.url)}</a><br><br>
+          <button class="btn secondary" onclick="removeFile(${index})">DELETE</button>
+        `;
+        filesList.appendChild(div);
+      });
+    }
+
+    window.removeFile = function(index){
+      filesData.splice(index, 1);
+      localStorage.setItem("aruuu_files", JSON.stringify(filesData));
+      renderFiles();
+    }
+
+    addFileBtn.addEventListener("click", () => {
+      const name = fileName.value.trim();
+      const url = fileUrl.value.trim();
+      if(!name || !url) return alert("Fill both fields.");
+      filesData.push({ name, url });
+      localStorage.setItem("aruuu_files", JSON.stringify(filesData));
+      fileName.value = "";
+      fileUrl.value = "";
+      renderFiles();
+    });
+
+    renderFiles();
+
+    function escapeHtml(str){
+      return str
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttr(str){
+      return escapeHtml(str);
+    }
+
+    /* START */
+    window.onload = function(){
+      showScreen(bootScreen);
+      typeLine();
+    }
+  </script>
 </body>
 </html>
