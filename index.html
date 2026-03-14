@@ -12,9 +12,19 @@ background:black;
 color:#00ff88;
 font-family:'Share Tech Mono', monospace;
 overflow:hidden;
+margin:0;
 }
 
-/* boot terminal */
+/* MATRIX BACKGROUND */
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
+}
+
+/* BOOT TERMINAL */
 
 #boot{
 position:absolute;
@@ -25,7 +35,7 @@ font-size:18px;
 line-height:1.7;
 }
 
-/* loading animation */
+/* LOADER */
 
 #loader{
 position:absolute;
@@ -46,7 +56,7 @@ animation:dots 1.5s infinite;
 100%{content:'...';}
 }
 
-/* ritual screen */
+/* SECURITY SCREEN */
 
 #securityBox{
 display:none;
@@ -56,43 +66,46 @@ left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
 font-family:'Cinzel', serif;
-color:#aa0000;
+color:red;
 }
 
-/* ritual symbol */
+/* RITUAL SYMBOL */
 
 .ritual{
-font-size:80px;
+font-size:100px;
+color:white;
 margin-bottom:20px;
-color:#ff0000;
-animation:floatUp 3s ease-in-out infinite;
+animation:floatSpin 6s ease-in-out infinite;
 }
 
-/* floating upward */
+/* FLOAT + SPIN */
 
-@keyframes floatUp{
-0%{transform:translateY(0);}
-50%{transform:translateY(-10px);}
-100%{transform:translateY(0);}
+@keyframes floatSpin{
+
+0%{
+transform:translateY(0px) rotate(0deg);
 }
 
-/* blood drip */
-
-.drip{
-width:4px;
-height:20px;
-background:#ff0000;
-margin:0 auto;
-animation:drip 2s infinite;
+50%{
+transform:translateY(-25px) rotate(180deg);
 }
 
-@keyframes drip{
-0%{height:0;}
-50%{height:25px;}
-100%{height:0;}
+100%{
+transform:translateY(0px) rotate(360deg);
 }
 
-/* dashboard */
+}
+
+/* DASHBOARD */
+
+#dashboard{
+display:none;
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+}
 
 textarea{
 width:420px;
@@ -110,10 +123,32 @@ padding:8px 14px;
 cursor:pointer;
 }
 
+/* SECRET CONSOLE */
+
+#console{
+display:none;
+position:absolute;
+bottom:20px;
+left:20px;
+background:black;
+border:1px solid #00ff88;
+padding:10px;
+}
+
+#console input{
+background:black;
+border:none;
+color:#00ff88;
+outline:none;
+width:260px;
+}
+
 </style>
 </head>
 
 <body>
+
+<canvas id="matrix"></canvas>
 
 <div id="boot"></div>
 
@@ -121,12 +156,11 @@ cursor:pointer;
 loading<span class="loadingDots"></span>
 </div>
 
-<!-- ritual screen -->
+<!-- SECURITY SCREEN -->
 
 <div id="securityBox">
 
 <div class="ritual">⚚</div>
-<div class="drip"></div>
 
 <div>
 
@@ -143,15 +177,13 @@ loading<span class="loadingDots"></span>
 
 </div>
 
-<!-- dashboard -->
+<!-- DASHBOARD -->
 
-<div id="dashboard" style="display:none;">
+<div id="dashboard">
 
 <h1>⚡ Aaron OS</h1>
 
 <p>Personal Matrix</p>
-
-<h3>Notes</h3>
 
 <textarea id="notes"></textarea>
 
@@ -161,13 +193,19 @@ loading<span class="loadingDots"></span>
 
 </div>
 
-<!-- dark ambient soundtrack -->
+<!-- SECRET CONSOLE -->
+
+<div id="console">
+> <input id="cmd">
+</div>
+
+<!-- SOUND -->
 
 <audio id="bootSound" loop>
-<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5e6f86f5c1.mp3?filename=dark-ambience-110357.mp3">
+<source src="https://cdn.pixabay.com/download/audio/2023/03/14/audio_f4b4db3c0a.mp3?filename=dark-ambient-141528.mp3">
 </audio>
 
-<!-- firebase -->
+<!-- FIREBASE -->
 
 <script type="module">
 
@@ -175,12 +213,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-apiKey: "AIzaSyCmUw12qALP4k_ZU4xBVSw0OPn4pDzd-9Q",
-authDomain: "aruuu-dashboard.firebaseapp.com",
-projectId: "aruuu-dashboard",
-storageBucket: "aruuu-dashboard.firebasestorage.app",
-messagingSenderId: "109570038436",
-appId: "1:109570038436:web:f3371737635a33ef4d2431"
+apiKey:"AIzaSyCmUw12qALP4k_ZU4xBVSw0OPn4pDzd-9Q",
+authDomain:"aruuu-dashboard.firebaseapp.com",
+projectId:"aruuu-dashboard",
+storageBucket:"aruuu-dashboard.firebasestorage.app",
+messagingSenderId:"109570038436",
+appId:"1:109570038436:web:f3371737635a33ef4d2431"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -212,9 +250,51 @@ loadNote();
 
 </script>
 
-<!-- boot animation -->
-
 <script>
+
+/* MATRIX RAIN */
+
+const canvas=document.getElementById("matrix");
+const ctx=canvas.getContext("2d");
+
+canvas.height=window.innerHeight;
+canvas.width=window.innerWidth;
+
+const letters="01ΔRUUU";
+const fontSize=16;
+const columns=canvas.width/fontSize;
+
+const drops=[];
+
+for(let x=0;x<columns;x++)
+drops[x]=1;
+
+function draw(){
+
+ctx.fillStyle="rgba(0,0,0,0.05)";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+ctx.fillStyle="#00ff88";
+ctx.font=fontSize+"px monospace";
+
+for(let i=0;i<drops.length;i++){
+
+const text=letters.charAt(Math.floor(Math.random()*letters.length));
+
+ctx.fillText(text,i*fontSize,drops[i]*fontSize);
+
+if(drops[i]*fontSize>canvas.height && Math.random()>0.975)
+drops[i]=0;
+
+drops[i]++;
+
+}
+
+}
+
+setInterval(draw,33);
+
+/* BOOT TEXT */
 
 const lines=[
 "> initializing ΔRUUU DIMENSION...",
@@ -234,12 +314,10 @@ if(lineIndex>=lines.length){
 document.getElementById("loader").style.display="block";
 
 setTimeout(()=>{
-
 document.getElementById("boot").style.display="none";
 document.getElementById("loader").style.display="none";
 document.getElementById("securityBox").style.display="block";
-
-},2500);
+},2000);
 
 return;
 
@@ -269,12 +347,13 @@ setTimeout(typeLine,30);
 
 charIndex=0;
 lineIndex++;
-
 setTimeout(typeLine,500);
 
 }
 
 }
+
+/* PASSWORD */
 
 function check(){
 
@@ -293,12 +372,55 @@ alert("access denied");
 
 }
 
+/* SECRET CONSOLE */
+
+document.addEventListener("keydown",function(e){
+
+if(e.key==="`"){
+
+let c=document.getElementById("console");
+
+c.style.display = c.style.display==="none" ? "block":"none";
+
+}
+
+});
+
+document.getElementById("cmd").addEventListener("keydown",function(e){
+
+if(e.key==="Enter"){
+
+let v=this.value;
+
+if(v==="admin aruuu"){
+
+alert("ADMIN ACCESS GRANTED");
+
+document.getElementById("dashboard").style.display="block";
+
+}
+
+this.value="";
+
+}
+
+});
+
+/* START */
+
 window.onload=function(){
 
-document.getElementById("bootSound").play();
 typeLine();
 
 }
+
+/* SOUND PLAY ON FIRST CLICK */
+
+document.addEventListener("click",function(){
+
+document.getElementById("bootSound").play();
+
+},{once:true});
 
 </script>
 
