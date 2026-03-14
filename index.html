@@ -14,6 +14,8 @@ font-family:'Share Tech Mono', monospace;
 overflow:hidden;
 }
 
+/* boot terminal */
+
 #boot{
 position:absolute;
 bottom:120px;
@@ -23,6 +25,29 @@ font-size:18px;
 line-height:1.7;
 }
 
+/* loading animation */
+
+#loader{
+position:absolute;
+bottom:80px;
+right:180px;
+display:none;
+}
+
+.loadingDots::after{
+content:'';
+animation:dots 1.5s infinite;
+}
+
+@keyframes dots{
+0%{content:'';}
+33%{content:'.';}
+66%{content:'..';}
+100%{content:'...';}
+}
+
+/* ritual screen */
+
 #securityBox{
 display:none;
 position:absolute;
@@ -31,12 +56,43 @@ left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
 font-family:'Cinzel', serif;
+color:#aa0000;
 }
 
+/* ritual symbol */
+
 .ritual{
-font-size:70px;
+font-size:80px;
 margin-bottom:20px;
+color:#ff0000;
+animation:floatUp 3s ease-in-out infinite;
 }
+
+/* floating upward */
+
+@keyframes floatUp{
+0%{transform:translateY(0);}
+50%{transform:translateY(-10px);}
+100%{transform:translateY(0);}
+}
+
+/* blood drip */
+
+.drip{
+width:4px;
+height:20px;
+background:#ff0000;
+margin:0 auto;
+animation:drip 2s infinite;
+}
+
+@keyframes drip{
+0%{height:0;}
+50%{height:25px;}
+100%{height:0;}
+}
+
+/* dashboard */
 
 textarea{
 width:420px;
@@ -61,9 +117,16 @@ cursor:pointer;
 
 <div id="boot"></div>
 
+<div id="loader">
+loading<span class="loadingDots"></span>
+</div>
+
+<!-- ritual screen -->
+
 <div id="securityBox">
 
 <div class="ritual">⚚</div>
+<div class="drip"></div>
 
 <div>
 
@@ -80,9 +143,12 @@ cursor:pointer;
 
 </div>
 
+<!-- dashboard -->
+
 <div id="dashboard" style="display:none;">
 
 <h1>⚡ Aaron OS</h1>
+
 <p>Personal Matrix</p>
 
 <h3>Notes</h3>
@@ -95,25 +161,32 @@ cursor:pointer;
 
 </div>
 
+<!-- dark ambient soundtrack -->
+
+<audio id="bootSound" loop>
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5e6f86f5c1.mp3?filename=dark-ambience-110357.mp3">
+</audio>
+
+<!-- firebase -->
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCmUw12qALP4k_ZU4xBVSw0OPn4pDzd-9Q",
-  authDomain: "aruuu-dashboard.firebaseapp.com",
-  projectId: "aruuu-dashboard",
-  storageBucket: "aruuu-dashboard.firebasestorage.app",
-  messagingSenderId: "109570038436",
-  appId: "1:109570038436:web:f3371737635a33ef4d2431",
-  measurementId: "G-M1W5NXVT2Z"
+apiKey: "AIzaSyCmUw12qALP4k_ZU4xBVSw0OPn4pDzd-9Q",
+authDomain: "aruuu-dashboard.firebaseapp.com",
+projectId: "aruuu-dashboard",
+storageBucket: "aruuu-dashboard.firebasestorage.app",
+messagingSenderId: "109570038436",
+appId: "1:109570038436:web:f3371737635a33ef4d2431"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const docRef = doc(db, "dashboard", "notes");
+const docRef = doc(db,"dashboard","notes");
 
 async function loadNote(){
 
@@ -127,7 +200,7 @@ document.getElementById("notes").value = snap.data().text;
 
 window.saveNote = async function(){
 
-let text = document.getElementById("notes").value;
+let text=document.getElementById("notes").value;
 
 await setDoc(docRef,{text:text});
 
@@ -139,9 +212,11 @@ loadNote();
 
 </script>
 
+<!-- boot animation -->
+
 <script>
 
-const lines = [
+const lines=[
 "> initializing ΔRUUU DIMENSION...",
 "> opening abyss channel...",
 "> unknown presence detected...",
@@ -149,28 +224,53 @@ const lines = [
 "> ritual authentication required..."
 ];
 
-let i = 0;
+let lineIndex=0;
+let charIndex=0;
 
-function boot(){
+function typeLine(){
 
-if(i < lines.length){
+if(lineIndex>=lines.length){
 
-let div = document.createElement("div");
-div.textContent = lines[i];
-document.getElementById("boot").appendChild(div);
-
-i++;
-
-setTimeout(boot,1200);
-
-}else{
+document.getElementById("loader").style.display="block";
 
 setTimeout(()=>{
 
 document.getElementById("boot").style.display="none";
+document.getElementById("loader").style.display="none";
 document.getElementById("securityBox").style.display="block";
 
-},1200);
+},2500);
+
+return;
+
+}
+
+let boot=document.getElementById("boot");
+
+if(charIndex===0){
+
+let div=document.createElement("div");
+boot.appendChild(div);
+
+}
+
+let currentLine=lines[lineIndex];
+let currentDiv=boot.lastChild;
+
+currentDiv.textContent+=currentLine[charIndex];
+
+charIndex++;
+
+if(charIndex<currentLine.length){
+
+setTimeout(typeLine,30);
+
+}else{
+
+charIndex=0;
+lineIndex++;
+
+setTimeout(typeLine,500);
 
 }
 
@@ -178,9 +278,9 @@ document.getElementById("securityBox").style.display="block";
 
 function check(){
 
-let ans = document.getElementById("answer").value;
+let ans=document.getElementById("answer").value;
 
-if(ans === "诺拉"){
+if(ans==="诺拉"){
 
 document.getElementById("securityBox").style.display="none";
 document.getElementById("dashboard").style.display="block";
@@ -193,7 +293,12 @@ alert("access denied");
 
 }
 
-boot();
+window.onload=function(){
+
+document.getElementById("bootSound").play();
+typeLine();
+
+}
 
 </script>
 
